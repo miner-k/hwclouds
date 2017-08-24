@@ -3,10 +3,18 @@
 
 import  requests
 
+
 username = "hwcloudsom1"
 password = "Hws@123456?"
 
 def get_Token(username,password,region='cn-north-1'):
+    """
+    获取token
+    :param username: 用户名
+    :param password: 密码
+    :param region: 区域
+    :return: tokend的值
+    """
     url = 'https://ecs.'+ region +'.myhwclouds.com/v3/auth/tokens'
 
 
