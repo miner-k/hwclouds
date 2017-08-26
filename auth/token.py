@@ -2,8 +2,8 @@
 
 import  requests
 
-username = "hwcloudsom1"
-password = "Hws@123456?"
+username = "username"
+password = "passwd"
 
 def get_Token(username,password):
     url = 'https://iam.cn-north-1.myhwclouds.com/v3/auth/tokens'
