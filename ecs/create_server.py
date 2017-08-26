@@ -4,8 +4,8 @@ import ecs_token
 import requests
 
 
-username = "hwcloudsom1"
-password = "Hws@123456?"
+username = "username"
+password = "password"
 
 #获取token
 tokens = ecs_token.get_Token(username, password)
