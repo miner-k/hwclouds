@@ -4,8 +4,8 @@
 import  requests
 
 
-username = "hwcloudsom1"
-password = "Hws@123456?"
+username = "***********"
+password = "***********"
 
 def get_Token(username,password,region='cn-north-1'):
     """
