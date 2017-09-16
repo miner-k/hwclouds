@@ -4,8 +4,8 @@ import ecs_token
 import requests
 
 #账号和密码
-username = "hwcloudsom1"
-password = "Hws@123456?"
+username = "***********"
+password = "***********"
 
 #项目ID和查询的区域
 
