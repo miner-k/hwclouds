@@ -2,8 +2,13 @@
 
 import  requests
 
+<<<<<<< HEAD:auth/token.py
 username = "**********"
 password = "**********"
+=======
+username = "username"
+password = "passwd"
+>>>>>>> origin/master:iam/token.py
 
 def get_Token(username,password):
     url = 'https://iam.cn-north-1.myhwclouds.com/v3/auth/tokens'

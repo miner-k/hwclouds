@@ -4,8 +4,10 @@ import ecs_token
 import requests
 
 
+
 username = "**********"
 password = "**********"
+
 
 #获取token
 tokens = ecs_token.get_Token(username, password)
