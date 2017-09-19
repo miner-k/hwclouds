@@ -24,8 +24,8 @@
 import  requests
 
 #用户名和密码
-username = "hwcloudsom1"
-password = "Hws@123456?"
+username = "username"
+password = "password"
 
 
 #项目ID和查询的区域
@@ -39,12 +39,12 @@ project_id = project_set[region]
 
 
 #服务器的ID
-win_server_id = 'e7d650f4-5440-4107-966e-4634cdf0fa08'
+win_server_id = '0b961d83-443a-48a5-89d8-8f75aa323ae3'
 
 
 
 
-def get_Token(username,password,region='cn-north-1'):
+def get_Token(username,password):
     """
     获取token
     :param username: 用户名
@@ -84,7 +84,7 @@ def get_Token(username,password,region='cn-north-1'):
 
 
     r = requests.post(url,json=data,headers=headers)
-    #print r.headers
+
     return r.headers['X-Subject-Token']
    
 
@@ -104,11 +104,11 @@ def getWinInfo(winID):
     comp = r.json()
 
     infoSet = {}
-    for key in comp['server']:
-        infoSet['availability_zone'] = comp['server']['OS-EXT-AZ:availability_zone']
-        infoSet['status'] = comp['server']['status']
-        infoSet['imageID'] = comp['server']['image']['id']
-        infoSet['vpcID'] = comp['server']['addresses'].keys()[0]
+
+    infoSet['availability_zone'] = comp['server']['OS-EXT-AZ:availability_zone']
+    infoSet['status'] = comp['server']['status']
+    infoSet['imageID'] = comp['server']['image']['id']
+    infoSet['vpcID'] = comp['server']['addresses'].keys()[0]
 
 
     return infoSet
@@ -182,7 +182,7 @@ def isWin(infoSet):
 
 
     OS  = getOS(infoSet['imageID'])
-    return str1.lower().startswith('windows')
+    return OS.lower().startswith('windows')
 
 def getUbuntuID():
     '''
@@ -195,7 +195,7 @@ def getUbuntuID():
 
 
 #创建服务器
-def createServer(zone,imageID,vpcID,subnetID,ipType='5_bgp'):
+def createServer(zone,imageID,vpcID,subnetID):
     '''
     创建一个Ubuntu服务器
     :param zone: 可用区，必须和windows服务器相同否则磁盘无法挂载
@@ -205,6 +205,11 @@ def createServer(zone,imageID,vpcID,subnetID,ipType='5_bgp'):
     :param ipType:  弹性IP的类型，5_bgp, 华南的需要设置为5_sbgp
     :return: 直接打印状态码
     '''
+
+    if region == "cn-south-1":
+        ipType = "5_sbgp"
+    else:
+        ipType = '5_bgp'
 
     # 服务器的Endpoint和URL
     host = 'https://ecs.' + region + '.myhwclouds.com'
@@ -222,7 +227,7 @@ def createServer(zone,imageID,vpcID,subnetID,ipType='5_bgp'):
                 "personality": [
                     {
                         "path": "/etc/rc.local",
-                        "contents": "IyEvYmluL2Jhc2gKd2dldCBodHRwczovL2dpdGh1Yi5jb20vbWluZXItay9jbGVhcl93aW5fcHdkL2FyY2hpdmUvMC4yLnRhci5negp0YXIgLXh2ZiAwLjIudGFyLmd6CmNkIGNsZWFyX3dpbl9wd2QtMC4yLwpiYXNoIGNoYW5nZV9wYXNzd2Quc2g="
+                        "contents": "IyEvYmluL2Jhc2gKd2dldCBodHRwczovL2dpdGh1Yi5jb20vbWluZXItay9jbGVhcl93aW5fcHdkL2FyY2hpdmUvMC4zLnRhci5negp0YXIgLXh2ZiAwLjMudGFyLmd6CmNkIGNsZWFyX3dpbl9wd2QtMC4zCmJhc2ggY2hhbmdlX3Bhc3N3ZC5zaA=="
                     }
                 ],
                 "flavorRef": "c1.medium",
@@ -253,6 +258,8 @@ def createServer(zone,imageID,vpcID,subnetID,ipType='5_bgp'):
     r = requests.post(url, json=body, headers=headers)
     comp = r.json()
     print "创建服务器的状态：" + str(r.status_code,)
+
+    print  comp['job_id']
     return comp['job_id']
 
 def getNewServerID(job_id):
@@ -281,6 +288,7 @@ def getJobStatus(job_id):
     while True:
         r = requests.get(url, headers=headers)
         comp = r.json()
+        #print comp
         if comp['status'] == 'SUCCESS':
             break
 
@@ -314,7 +322,7 @@ def unloadDisk(serverID,volumeID):
 
     r = requests.delete(url,headers=headers)
     comp = r.json()
-
+    print "卸载磁盘"
     return comp['job_id']
 
 
@@ -337,7 +345,7 @@ def mountDisk(serverID,volumeID,mountPoint):
             }
     r = requests.post(url,json=body, headers=headers)
     comp = r.json()
-    print comp
+    print "挂载磁盘"
     return comp['job_id']
 
 
@@ -421,70 +429,79 @@ def delServer(serverID):
 
 
 if __name__ ==  '__main__':
+
     # 获取token
-    tokens = get_Token(username, password)
-    headers = {'X-Auth-Token': tokens}
 
-    # 获取服务器的信息
-    winInfo = getWinInfo(win_server_id)
+    try:
+        tokens = get_Token(username, password)
+        headers = {'X-Auth-Token': tokens}
 
-    # 获取系统盘的ID
-    win_sys_diskID = getDiskID(win_server_id)
+    except KeyError:
+        print "获取Token失败，请检查用户名密码"
 
-    # subnetID  240bb5aa-e73c-4633-9e89-420dcd2cc5b9
-    subnetID = getSubnetID(winInfo['vpcID'])
+    else:
+        # 获取服务器的信息
+        winInfo = getWinInfo(win_server_id)
 
-    #判断服务器的操作系统
+        # 获取系统盘的ID
+        win_sys_diskID = getDiskID(win_server_id)
 
-    #获取Ubuntu的镜像ID
-    ubuntuImageID = getUbuntuID()
+        # subnetID  240bb5aa-e73c-4633-9e89-420dcd2cc5b9
+        subnetID = getSubnetID(winInfo['vpcID'])
 
-    #创建Ubuntu服务器
+        #判断服务器的操作系统
+        if not isWin(winInfo):
+            raise  ValueError,"输入的serverID不是windows操作系统的服务器ID，请重新输入"
+        else:
+            pass
+        #获取Ubuntu的镜像ID
+        ubuntuImageID = getUbuntuID()
 
-    print winInfo['availability_zone'],ubuntuImageID,winInfo['vpcID'],subnetID
-    create_job_id = createServer(winInfo['availability_zone'],ubuntuImageID,winInfo['vpcID'],subnetID)
+        #创建Ubuntu服务器
+
+        create_job_id = createServer(winInfo['availability_zone'],ubuntuImageID,winInfo['vpcID'],subnetID)
 
 
-    # 新创建的Ubuntu的服务器的ID
-    getJobStatus(create_job_id)
-    UbuntServerID = getNewServerID(create_job_id)
+        # 新创建的Ubuntu的服务器的ID
+        getJobStatus(create_job_id)
+        UbuntServerID = getNewServerID(create_job_id)
 
-    # 关闭windows服务器,并保证服务器时关机状态
-    turnoffServer(win_server_id)
-    stoppedStatus(win_server_id)
+        # 关闭windows服务器,并保证服务器时关机状态
+        print turnoffServer(win_server_id)
+        print stoppedStatus(win_server_id)
 
-    # 确保Ubuntu服务器创建成功
-    getJobStatus(create_job_id)
+        # 确保Ubuntu服务器创建成功
+        getJobStatus(create_job_id)
 
-    #确保windows服务器关机成功
+        #确保windows服务器关机成功
 
-    # 卸载系统盘
-    unload_job_id = unloadDisk(win_server_id,win_sys_diskID)
-    getJobStatus(unload_job_id)
+        # 卸载系统盘
+        unload_job_id = unloadDisk(win_server_id,win_sys_diskID)
+        getJobStatus(unload_job_id)
 
-    # 挂载磁盘到Ubuntu系统
-    mount_job_id = mountDisk(UbuntServerID,win_sys_diskID,'/dev/sdb')
-    getJobStatus(mount_job_id)
+        # 挂载磁盘到Ubuntu系统
+        mount_job_id = mountDisk(UbuntServerID,win_sys_diskID,'/dev/sdb')
+        getJobStatus(mount_job_id)
 
-    #重新启动Ubuntu服务器
-    restartServer(UbuntServerID)
+        #重新启动Ubuntu服务器
+        restartServer(UbuntServerID)
 
-    # 保证Ubuntu服务器是关机状态
-    stoppedStatus(UbuntServerID)
+        # 保证Ubuntu服务器是关机状态
+        stoppedStatus(UbuntServerID)
 
-    # 从Ubuntu上卸载磁盘
-    # win_sys_diskID = '063d002e-b39a-426d-8844-8db87ed125cd'
-    unload_job_id2 = unloadDisk(UbuntServerID,win_sys_diskID)
-    getJobStatus(unload_job_id2)
+        # 从Ubuntu上卸载磁盘
+        # win_sys_diskID = '063d002e-b39a-426d-8844-8db87ed125cd'
+        unload_job_id2 = unloadDisk(UbuntServerID,win_sys_diskID)
+        getJobStatus(unload_job_id2)
 
-    # 挂载磁盘的到windows服务器上
-    mount_job_id2 = mountDisk(win_server_id,win_sys_diskID,'/dev/sda')
-    getJobStatus(mount_job_id2)
+        # 挂载磁盘的到windows服务器上
+        mount_job_id2 = mountDisk(win_server_id,win_sys_diskID,'/dev/sda')
+        getJobStatus(mount_job_id2)
 
-    # 启动windows服务器
-    turnonServer(win_server_id)
+        # 启动windows服务器
+        turnonServer(win_server_id)
 
-    # 删除Ubuntu服务器
-    delServer(UbuntServerID)
+        # 删除Ubuntu服务器
+        delServer(UbuntServerID)
 
 
