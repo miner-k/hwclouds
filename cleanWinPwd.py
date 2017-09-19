@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #coding=utf-8
 '''
 清除windows操作系统的密码
