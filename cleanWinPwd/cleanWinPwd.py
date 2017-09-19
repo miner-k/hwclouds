@@ -24,8 +24,8 @@
 import  requests
 
 #用户名和密码
-username = "username"
-password = "password"
+username = "hwcloudsom1"
+password = "Hws@123456?"
 
 
 #项目ID和查询的区域
@@ -33,13 +33,13 @@ area = ('cn-north-1','cn-south-1','cn-east-2')
 project_set = {'cn-north-1':'52fb7d7429d04068ae8ff9632106e701','cn-south-1':'ee766306d2ad4387a56a0e31172185b5','cn-east-2':'21275af600cd4305840e5d10a500ee87'}
 
 #选择对应的区域
-region = area[0]
+region = area[2]
 project_id = project_set[region]
 
 
 
 #服务器的ID
-win_server_id = '0b961d83-443a-48a5-89d8-8f75aa323ae3'
+win_server_id = '6ccbebd0-93e3-476d-8eb4-583617f7f6b5'
 
 
 
@@ -258,9 +258,12 @@ def createServer(zone,imageID,vpcID,subnetID):
     r = requests.post(url, json=body, headers=headers)
     comp = r.json()
     print "创建服务器的状态：" + str(r.status_code,)
-
-    print  comp['job_id']
-    return comp['job_id']
+    #print comp
+    #print  comp['job_id']
+    if comp["error"]['message'] == 'eip to be created is 1, exceed quota left 0':
+        raise ValueError,"EIP 的配额不足导致服务器创建失败"
+    else:
+        return comp['job_id']
 
 def getNewServerID(job_id):
     '''
