@@ -31,14 +31,17 @@ headers = {
 def list_iam_users():
     """
     显示统一身份认证中所有的用户信息
-    :return:
+    :return:用户和用户ID组成的字典
     """
 
     url = host + '/v3/users'
     r = requests.get(url,headers=headers)
     comp = r.json()
+    users_dic = {}
     for name in comp.get('users'):
-        print name.get('name')
+        users_dic[name.get('name')] = name.get('id')
+
+    return users_dic
 
 def add_iam_user(iam_user,iam_user_pw='Jfz!955988',iam_user_email=''):
     """
@@ -63,10 +66,10 @@ def add_iam_user(iam_user,iam_user_pw='Jfz!955988',iam_user_email=''):
 
 
 if __name__ == '__main__':
-    iam_user = 'tom-ee'
-    iam_user_pw = 'test.ereeeee'
-    iam_user_email = '543156149@qq.com'
-    list_iam_users()
-    add_iam_user(iam_user,iam_user_pw,iam_user_email)
-    list_iam_users()
+    # iam_user = 'tom-ee'
+    # iam_user_pw = 'test.ereeeee'
+    # iam_user_email = '543156149@qq.com'
+    # list_iam_users()
+    # add_iam_user(iam_user,iam_user_pw,iam_user_email)
+    print list_iam_users()
 
