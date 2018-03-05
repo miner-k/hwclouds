@@ -180,8 +180,8 @@ def import_xlsx_to_iamgroup(fileName,group_name):
 
 if __name__ == '__main__':
     # 账号和密码(修改)
-    username = "linux_user001"
-    password = "543156149qq"
+    username = "********"
+    password = "********"
 
     # 项目ID和查询的区域（修改）
     area = ('cn-north-1', 'cn-south-1', 'cn-east-2')
@@ -202,7 +202,7 @@ if __name__ == '__main__':
     }
 
 
-    # 输入保存用户名的excel表名，和需要加入的组名
+    # 输入保存用户名的excel表名，和需要加入的组名(修改)
     FILENAME = 'test.xlsx'
     GROUPNAME = 'admin'
     import_xlsx_to_iamgroup(FILENAME,GROUPNAME)

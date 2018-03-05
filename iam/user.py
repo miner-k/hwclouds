@@ -5,8 +5,8 @@ import requests
 
 # 账号和密码
 
-username = "linux_user001"
-password = "543156149qq"
+username = "***********"
+password = "**********"
 
 # 项目ID和查询的区域
 
