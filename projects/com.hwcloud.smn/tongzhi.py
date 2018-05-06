@@ -28,7 +28,7 @@ def getToken():
 
     username = 'zhangyinkai'
     domain_name = 'hwcloudsom1'
-    password = 'zYK,1410'
+    password = 'zYK#1410'
     project_name = "cn-north-1"
     IAM_URL = 'https://iam.cn-north-1.myhuaweicloud.com/v3/auth/tokens'
     headers = {'Content-Type':'application/json;charset=utf8'}
@@ -59,10 +59,10 @@ def getToken():
     }
 
     r = requests.post(url=IAM_URL,json=body,headers=headers)
-    print r.status_code
+    # print r.status_code
 
-    print r.headers
-    print r.headers['X-Subject-Token']
+    # print r.headers
+    # print r.headers['X-Subject-Token']
     return r.headers['X-Subject-Token']
 
 def sendMessages(phones,messages,sign_id = "e0cde4e0b08e4ce590344737e852abe5"):
@@ -91,7 +91,7 @@ def sendMessages(phones,messages,sign_id = "e0cde4e0b08e4ce590344737e852abe5"):
     }
 
     r = requests.post(url=SDM_URL,json=body,headers=headers)
-    print r.status_code
+    # print r.status_code
 
 def getEmployeePhone(filename,phoneSheet = 'phone'):
     '''
@@ -141,17 +141,19 @@ def getstafflist(filename,today,tomorrow):
 
 
     wb = load_workbook(filename)
-    ws = wb.active
+    ws = wb['work']
 
     for i in range(1,40):
         cellValue = ws.cell(row=1, column=i).value
         # print cellValue
         # cellValue = cellValue.decode('utf-8')
-
+        # print cellValue
         if cellValue == None:
             continue
         if cellValue == u'姓名':
             nameCol = i
+            # print "#######xingming######"
+            # print nameCol
 
         elif cellValue == today:
             todayCol = i
@@ -166,14 +168,16 @@ def getstafflist(filename,today,tomorrow):
                 tomorrow_list[ws.cell(row=num, column=nameCol).value] = ws.cell(row=num, column=i).value
 
     # print today_list
-    # print tomorrow_list
+    # print "########getstafflist########tomorrow_list"
+    # print ws['B4'].value
+    # print  tomorrow_list
     return today_list,tomorrow_list
 
 
-def notice_all():
+def notice_all(fileName):
 
 
-    fileName = 't1.xlsx'
+    # fileName = 't1.xlsx'
 
     now_time = time.strftime("%Y-%m-%d ", time.localtime())
     now_time_hour = time.strftime("%H", time.localtime())
@@ -193,6 +197,9 @@ def notice_all():
     xiaE = []
     yeban = []
     xiuxi = []
+
+    # print "#########noticeall######tomorrowlist"
+    # print  tomorrowlist
     for shifts in tomorrowlist:
         if tomorrowlist[shifts] == u'白1':
             bai1.append(shifts)
@@ -229,7 +236,7 @@ def notice_all():
     yebanPhoneList = []
     xiuxiPhoneList = []
 
-
+    print bai1
     for i in bai1:
         bai1PhoneList.append(phoneList[i])
 
@@ -249,11 +256,11 @@ def notice_all():
         xiuxiPhoneList.append(phoneList[i])
 
 
-    bai1Message = '上班提醒：明天' + now_time + '您安排上白1班（8:30-18:30）'
-    bai2Message = '上班提醒：明天' + now_time + '您安排上白2班（9:30-19:30）'
-    xiaMessage = '上班提醒：明天' + now_time + '您安排上下午班（14:00-23:00）'
-    xiaEMessage = '上班提醒：明天' + now_time + '您安排上下午班（17:00-22:00）'
-    yebanMessage = '上班提醒：明天' + now_time + '您安排上下午班（21:00-次9:00）'
+    bai1Message = '上班提醒：今天' + now_time + '明天您白1班（8:30-18:30）'
+    bai2Message = '上班提醒：今天' + now_time + '明天您白2班（9:30-19:30）'
+    xiaMessage = '上班提醒：今天' + now_time + '明天您下午班（14:00-23:00）'
+    xiaEMessage = '上班提醒：今天' + now_time + '明天您下午班（17:00-22:00）'
+    yebanMessage = '上班提醒：今天' + now_time + '明天您下午班（21:00-次9:00）'
 
     sendMessages(bai1PhoneList,bai1Message)
     sendMessages(bai2PhoneList,bai2Message)
@@ -261,10 +268,28 @@ def notice_all():
     sendMessages(xiaEPhoneList,xiaEMessage)
     sendMessages(yebanPhoneList,yebanMessage)
 
-
+    # print bai1PhoneList,bai1Message
 
 if __name__ == '__main__':
-    # notice_all()
-    # getstafflist()
+
+    # getstafflist('t1.xlsx',u'6日',u'7日')
     # getEmployeePhone()
-    notice_all()
+    # sendMessages(['13403622324'],'send test')
+    fileName = 't1.xlsx'
+
+    # now_time = time.strftime("%H:%M:%S ", time.localtime())
+    # print now_time
+    # print
+
+    while True:
+        now_time = time.strftime("%H:%M:%S ", time.localtime())
+        print now_time
+        if str(now_time) == '20:57:00':
+            print '#########'
+            break
+
+    # while True:
+    #     now_time_hour = time.strftime("%H", time.localtime())
+    #
+    #     if now_time_hour ==
+    #     # notice_all(fileName=fileName)
