@@ -275,21 +275,11 @@ if __name__ == '__main__':
     # getstafflist('t1.xlsx',u'6日',u'7日')
     # getEmployeePhone()
     # sendMessages(['13403622324'],'send test')
-    fileName = 't1.xlsx'
-
-    # now_time = time.strftime("%H:%M:%S ", time.localtime())
-    # print now_time
-    # print
+    fileName = 't2.xls'
 
     while True:
-        now_time = time.strftime("%H:%M:%S ", time.localtime())
-        print now_time
-        if str(now_time) == '20:57:00':
-            print '#########'
-            break
-
-    # while True:
-    #     now_time_hour = time.strftime("%H", time.localtime())
-    #
-    #     if now_time_hour ==
-    #     # notice_all(fileName=fileName)
+    	now_time = time.strftime("%H:%M", time.localtime())
+    	# print now_time
+    	if str(now_time) == '23:48':
+            notice_all(fileName)
+            time.sleep(60)
