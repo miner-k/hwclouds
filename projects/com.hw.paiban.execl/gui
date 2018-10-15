@@ -1,0 +1,60 @@
+#conding=utf-8
+
+from tkinter import *
+import os
+
+
+
+root = Tk()
+root.title('miner-k tools')
+# root.maxsize(500,500)
+root.minsize(300,400)
+
+
+LF1 = LabelFrame(root,text='选择当前目录下的排班文件')
+# LF1.pack(ipadx=50,ipady=25,pady=30,padx=20)
+LF1.grid(row=0,column=0,padx=20,pady=30)
+sb = Scrollbar(LF1)
+# sb.pack(side=RIGHT)
+sb.pack(side=RIGHT,fill=Y)
+lb1 = Listbox(LF1,yscrollcommand=sb.set)
+for file in os.listdir():
+    lb1.insert(END, file)
+
+sb.config(command=lb1.yview)
+lb1.pack(fill=Y)
+
+groupSet = [("A组","groupA"),("B组","groupB"),("C组","groupC"),("D组","groupD")]
+
+groupLF = LabelFrame(root,text='组别')
+# groupLF.pack(ipadx=100,ipady=25,padx=10,pady=10)
+groupLF.grid(row=0,column=1,padx=20,pady=30)
+
+v1 = StringVar()
+v1.set('groupC')
+for gname,gvalue in groupSet:
+
+    b1 = Radiobutton(groupLF,text=gname,variable=v1,value=gvalue)
+    b1.pack(anchor=W,padx=20,pady=5)
+
+
+filename = ""
+groupName = ""
+
+def getVal():
+    # print(filename)
+    # print(groupName)
+    text = "fileName:" + lb1.get(ACTIVE) + "\n groupName:" + v1.get()
+    Label(root, text=text).grid()
+    filename = lb1.get(ACTIVE)
+    groupName = v1.get()
+    return lb1.get(ACTIVE),v1.get()
+
+b1 = Button(root,text='run',command=getVal,borderwidth=2,width=6)
+b1.grid(sticky=N,columnspan=2)
+
+
+a,b = b1.invoke()
+print('a,b'+ a + b)
+print(filename + groupName+"-----------")
+mainloop()
